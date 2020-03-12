@@ -5,9 +5,11 @@
   "scripts": {
     "build-page": "cd views && yarn build",
     "start": "node ./bin/www",
-    "heroku-postbuild": "cd views && npm install && npm run build"
+    "dev": "nodemon ./bin/www",
+    "heroku-postbuild": "cd views && yarn && yarn build"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "cookie-parser": "^1.4.4",
     "debug": "~2.6.9",
     "express": "^4.17.1",
@@ -15,5 +17,14 @@
     "morgan": "^1.9.1",
     "pug": "^2.0.4",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "nodemon": "^2.0.2"
   }
 }
