@@ -1,8 +1,11 @@
+require('dotenv').config()
 const createError = require('http-errors')
 const express = require('express')
+const helmet = require('helmet')
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
+const cors = require('cors')
 
 const app = express()
 
@@ -10,6 +13,8 @@ const app = express()
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug')
 
+app.use(cors())
+app.use(helmet())
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))

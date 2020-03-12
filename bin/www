@@ -22,6 +22,25 @@ app.set('port', port)
 const server = http.createServer(app)
 const io = require('socket.io')(server)
 
+// const getApiAndEmit = 'TODO'
+// let interval
+
+io.on('connection', socket => {
+  socket.broadcast.emit('hi')
+  console.log('New client connected')
+  socket.on('chat message', function (msg) {
+    // console.log('message: ' + msg)
+    io.broadcast.emit('chat message', msg)
+  })
+  // if (interval) {
+  //   clearInterval(interval)
+  // }
+  // interval = setInterval(() => getApiAndEmit(socket), 10000)
+  socket.on('disconnect', () => {
+    console.log('Client disconnected')
+  })
+})
+
 /**
  * Listen on provided port, on all network interfaces.
  */
