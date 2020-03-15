@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect} from 'react'
+import socketIOClient from "socket.io-client";
 
-function App() {
+import logo from './logo.svg'
+import './App.css'
+
+const App = () => {
+  const [incomingMessages, setIncomingMessages] = useState(['Welcome here!']);
+  const [inputText, setInputText] = useState('');
+  // useEffect(() => {
+  //   console.log(inputText);
+  // }, [inputText]);
+
+  const handleSend = () =>{
+    const socket = socketIOClient(process.env.REACT_APP_SERVER_URL || 'localhost')
+    socket.emit("chat message", inputText);
+
+    setInputText('')
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <textarea>{JSON.stringify(incomingMessages)}</textarea>
+      <div>
+        <input 
+          type="text" 
+          value={inputText}
+          placeholder="Type something here"
+          onChange={e => setInputText(e.target.value)}
+        />
+        <button 
+          disabled={(inputText.length > 0) ? false : true}
+          onClick={() => handleSend()}
         >
-          Learn React
-        </a>
-      </header>
+            Send
+        </button>
+      </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
