@@ -4,7 +4,15 @@ import SearchBar from "../search-bar/search-bar";
 import ChatPeopleList from "../chat-poeple-list/chat-people-list";
 
 
-
+const chatPeopleGenFN = obj => {
+  return {
+    iconImg: 'https://ptetutorials.com/images/user-profile.png',
+    name: 'kelvin',
+    lastSent: '11:20',
+    lastContent: 'this is testing',
+    ... obj
+  }
+}
 const CHAT_LIST = [
   chatPeopleGenFN(), 
   chatPeopleGenFN({name: 'Hugo', lastSent: 'Yesterday', lastContent:'test456'}),

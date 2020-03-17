@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import '../../style/chatRoom.css'
 
+
+// maybe change to use useMemo, equal to React.pureComponetns
 const ChatPeople = ({data, isActive}) => {
   const {iconImg, name, lastSent, lastContent} = data
   console.log(data, isActive)
