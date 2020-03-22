@@ -37,7 +37,7 @@ io.on('connection', socket => {
     console.log(userName)
 
     socket.broadcast.emit('user joined', {
-      userName: socket.userName,
+      userName: userName,
       userCounter
     })
   })
@@ -46,8 +46,8 @@ io.on('connection', socket => {
     const { userName, message } = data
     console.log(userName, message)
     socket.broadcast.emit('new message', {
-      userName: data.userName,
-      message: data
+      userName,
+      message
     })
   })
 
