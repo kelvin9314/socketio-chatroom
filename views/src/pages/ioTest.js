@@ -1,36 +1,41 @@
-import React, { useState, useEffect} from 'react'
-import socketIOClient from "socket.io-client";
-
+import React, { useState, useEffect, useContext} from 'react'
+import { SocketContext } from "../contexts/socketProvider";
 import logo from '../logo.svg'
+
+// import { socket } from "../sockets";
 import '../style/App.css'
 
+const SOCKET_EVENT_MAP = {
+  addUser: 'add user',
+  newMessage: 'new message',
+  userJoined: 'user joined'
+}
 
 const IoTest = (props) => {
+  const { socket, messageHistory, setMessageHistory } = useContext(SocketContext)
   const [userName, setUserName] = useState('');
-  const [incomingMessages, setIncomingMessages] = useState([{
-    userName: 'Default',
-    message: 'Welcome here!'
-  }]);
   const [inputText, setInputText] = useState('');
-  
-  const socket = socketIOClient(process.env.REACT_APP_SERVER_URL || 'localhost')
 
-  socket.on('new message', data => {
-    console.log(data);
-    // setIncomingMessages([...incomingMessages,...[data.message]])
+  socket.on(SOCKET_EVENT_MAP.newMessage, ({userName, message}) => {
+    setMessageHistory([...messageHistory,...[{userName, message}]])
   })
 
-  socket.on('user joined', data => {
+  socket.on(SOCKET_EVENT_MAP.userJoined, (data) => {
     console.log(data);
+    const {userName, userCounter} = data
+    console.log({name: `${userName} joined`, message: `There are total ${userCounter} user now !~!`});
+    setMessageHistory([...messageHistory, ...[{userName: `${userName} joined`, message: `There are ${userCounter} user now`}]])
   })
   
 
   useEffect(() => {
-    console.log(incomingMessages);
-  }, [incomingMessages]);
+    console.log(messageHistory);
+  }, [messageHistory]);
 
   const handleSend = e =>{
-    socket.emit("new message",inputText);
+    const msg = { userName, message: inputText}
+    setMessageHistory([...messageHistory,...[msg]])
+    socket.emit(SOCKET_EVENT_MAP.newMessage, msg);
     setInputText('')
   }
 
@@ -42,17 +47,25 @@ const IoTest = (props) => {
   const handleEnterPress = (e, event) => {
     if(!inputText) return
     if(e.nativeEvent.keyCode === 13) {
-      switch (event) {
-        case 'add user':
+      try {
+        switch (event) {
+          case SOCKET_EVENT_MAP.addUser:
             setUserName(inputText)
-            socket.emit('add user', inputText)
+            socket.emit(SOCKET_EVENT_MAP.addUser, inputText)
             setInputText('')
-          break;
-        case 'new message':
-            socket.emit('new message', { userName, inputText})
-          break
-        default:
-          break;
+            break;
+          case SOCKET_EVENT_MAP.newMessage:
+            const msg = { userName, message: inputText}
+            setMessageHistory([...messageHistory,...[msg]])
+            socket.emit(SOCKET_EVENT_MAP.newMessage, msg)
+            break
+          default:
+            break;
+        }
+      } catch (err) {
+        console.log(err);
+      } finally{
+        setInputText('')
       }
     }
   }
@@ -60,15 +73,22 @@ const IoTest = (props) => {
   return (
     <div className="App">
       {userName ? (
-        <div>
-          <textarea rows="16" cols="50">{JSON.stringify(incomingMessages)}</textarea>
+        // <div  style="border-width:3px;border-style:dashed;border-color:#FFAC55;padding:5px;">
+        <div >
+          <ul>
+            {messageHistory.map(record => (
+              <li style={{borderWidth: '1px',borderStyle: 'dashed', borderColor: '#FFAC55', padding: '2px'}}>
+                {`${record.userName}: ${record.message}`}
+              </li>
+            ))}
+          </ul>
           <div>
             <input 
               type="text" 
               value={inputText}
               placeholder="Type something here"
               onChange={e => setInputText(e.target.value)}
-              onKeyPress={e => handleEnterPress(e, 'new message')}
+              onKeyPress={e => handleEnterPress(e, SOCKET_EVENT_MAP.newMessage)}
             />
             <button 
               disabled={(inputText.length > 0) ? false : true}
@@ -88,7 +108,7 @@ const IoTest = (props) => {
             type={"text"}
             value={inputText}
             onChange ={e => handleInputName(e)}
-            onKeyPress ={e => handleEnterPress(e, 'add user')}
+            onKeyPress ={e => handleEnterPress(e, SOCKET_EVENT_MAP.addUser)}
           />
         </div>
       )}
