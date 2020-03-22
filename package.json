@@ -1,7 +1,11 @@
 {
   "name": "chatroom-socker-io",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "12.16.1",
+    "yarn": "1.22.0"
+  },
   "scripts": {
     "build-page": "cd views && yarn build",
     "dev-page": "cd views && yarn dev",
