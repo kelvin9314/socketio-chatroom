@@ -1,11 +1,16 @@
 import React, { useState, useEffect} from 'react'
-import socketIOClient from "socket.io-client";
+// import socketIOClient from "socket.io-client";
 
 import logo from '../logo.svg'
 import '../style/App.css'
 
+const SOCKET_EVENT_MAP = {
+  addUser: 'add user2',
+  newMessage: 'new message',
+}
 
 const IoTest = (props) => {
+  const { socket } = props
   const [userName, setUserName] = useState('');
   const [incomingMessages, setIncomingMessages] = useState([{
     userName: 'Default',
@@ -13,14 +18,18 @@ const IoTest = (props) => {
   }]);
   const [inputText, setInputText] = useState('');
   
-  const socket = socketIOClient(process.env.REACT_APP_SERVER_URL || 'localhost')
+  // useEffect(() => {
+  //   console.log(inputText);
+  // }, [inputText]);
 
-  socket.on('new message', data => {
+  // const socket = socketIOClient(process.env.REACT_APP_SERVER_URL || 'localhost')
+
+  socket.on(SOCKET_EVENT_MAP.newMessage, data => {
     console.log(data);
-    // setIncomingMessages([...incomingMessages,...[data.message]])
+    setIncomingMessages([...incomingMessages,...[data]])
   })
 
-  socket.on('user joined', data => {
+  socket.on(SOCKET_EVENT_MAP.addUser, data => {
     console.log(data);
   })
   
@@ -30,7 +39,7 @@ const IoTest = (props) => {
   }, [incomingMessages]);
 
   const handleSend = e =>{
-    socket.emit("new message",inputText);
+    socket.emit(SOCKET_EVENT_MAP.newMessage, inputText);
     setInputText('')
   }
 
@@ -43,13 +52,13 @@ const IoTest = (props) => {
     if(!inputText) return
     if(e.nativeEvent.keyCode === 13) {
       switch (event) {
-        case 'add user':
+        case SOCKET_EVENT_MAP.addUser:
             setUserName(inputText)
-            socket.emit('add user', inputText)
+            socket.emit(SOCKET_EVENT_MAP.addUser, inputText)
             setInputText('')
           break;
-        case 'new message':
-            socket.emit('new message', { userName, inputText})
+        case SOCKET_EVENT_MAP.newMessage:
+            socket.emit(SOCKET_EVENT_MAP.newMessage, { userName, inputText})
           break
         default:
           break;
@@ -61,14 +70,21 @@ const IoTest = (props) => {
     <div className="App">
       {userName ? (
         <div>
-          <textarea rows="16" cols="50">{JSON.stringify(incomingMessages)}</textarea>
+          {/* <textarea rows="16" cols="50">{JSON.stringify(incomingMessages)}</textarea> */}
+          <ul>
+            {incomingMessages.map(record => (
+              <li>
+                {`${record.userName}: ${record.message}`}
+              </li>
+            ))}
+          </ul>
           <div>
             <input 
               type="text" 
               value={inputText}
               placeholder="Type something here"
               onChange={e => setInputText(e.target.value)}
-              onKeyPress={e => handleEnterPress(e, 'new message')}
+              onKeyPress={e => handleEnterPress(e, SOCKET_EVENT_MAP.newMessage)}
             />
             <button 
               disabled={(inputText.length > 0) ? false : true}
@@ -88,7 +104,7 @@ const IoTest = (props) => {
             type={"text"}
             value={inputText}
             onChange ={e => handleInputName(e)}
-            onKeyPress ={e => handleEnterPress(e, 'add user')}
+            onKeyPress ={e => handleEnterPress(e, SOCKET_EVENT_MAP.addUser)}
           />
         </div>
       )}
