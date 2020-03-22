@@ -12,7 +12,7 @@ const http = require('http')
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3000')
+const port = normalizePort(process.env.SERVER_PORT || '3000')
 app.set('port', port)
 
 /**
@@ -22,20 +22,35 @@ app.set('port', port)
 const server = http.createServer(app)
 const io = require('socket.io')(server)
 
-// const getApiAndEmit = 'TODO'
-// let interval
+let userCounter = 0
 
 io.on('connection', socket => {
+  let isUserAdded = false
+
   socket.broadcast.emit('hi')
   console.log('New client connected')
-  socket.on('chat message', function (msg) {
-    // console.log('message: ' + msg)
-    io.broadcast.emit('chat message', msg)
+  socket.on('add user', userName => {
+    if (isUserAdded) return
+    socket.userName = userName
+    isUserAdded = true
+    userCounter += 1
+    console.log(userName)
+
+    socket.broadcast.emit('user joined', {
+      userName: userName,
+      userCounter
+    })
   })
-  // if (interval) {
-  //   clearInterval(interval)
-  // }
-  // interval = setInterval(() => getApiAndEmit(socket), 10000)
+
+  socket.on('new message', data => {
+    const { userName, message } = data
+    console.log(userName, message)
+    socket.broadcast.emit('new message', {
+      userName,
+      message
+    })
+  })
+
   socket.on('disconnect', () => {
     console.log('Client disconnected')
   })
