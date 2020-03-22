@@ -1,7 +1,6 @@
+import '../style/chatRoom.css'
 import React, { useEffect, useState } from "react";
 
-import '../style/chatRoom.css'
-import 'bootstrap/dist/css/bootstrap.css';
 
 import InboxPeople from "../components/inbox-people/inbox-people";
 
