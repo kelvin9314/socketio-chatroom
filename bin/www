@@ -20,41 +20,8 @@ app.set('port', port)
  */
 
 const server = http.createServer(app)
-const io = require('socket.io')(server)
-
-let userCounter = 0
-
-io.on('connection', socket => {
-  let isUserAdded = false
-
-  socket.broadcast.emit('hi')
-  console.log('New client connected')
-  socket.on('add user', userName => {
-    if (isUserAdded) return
-    socket.userName = userName
-    isUserAdded = true
-    userCounter += 1
-    console.log(userName)
-
-    socket.broadcast.emit('user joined', {
-      userName: userName,
-      userCounter
-    })
-  })
-
-  socket.on('new message', data => {
-    const { userName, message } = data
-    console.log(userName, message)
-    socket.broadcast.emit('new message', {
-      userName,
-      message
-    })
-  })
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected')
-  })
-})
+const io = require('socket.io')(server, { origins: '*:*' })
+require('../sockets')(io)
 
 /**
  * Listen on provided port, on all network interfaces.
