@@ -24,14 +24,12 @@ const IoTest = (props) => {
     console.log(data);
     const {userName, userCounter} = data
     console.log({name: `${userName} joined`, message: `There are total ${userCounter} user now !~!`});
-    setMessageHistory([...messageHistory, ...[{userName: `${userName} joined`, message: `There are ${userCounter} user now`}]])
+    setMessageHistory([
+      ...messageHistory,
+      {userName: `${userName} joined`, message: `There are ${userCounter} user now`}
+    ])
   })
   
-
-  useEffect(() => {
-    console.log(messageHistory);
-  }, [messageHistory]);
-
   const handleSend = e =>{
     const msg = { userName, message: inputText}
     setMessageHistory([...messageHistory,...[msg]])

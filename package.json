@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "12.16.1",
-    "yarn": "1.22.0"
+    "node": ">=10.13",
+    "yarn": "^1.13"
   },
   "scripts": {
     "build-page": "cd views && yarn build",
