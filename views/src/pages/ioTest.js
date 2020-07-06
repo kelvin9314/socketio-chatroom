@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext} from 'react'
-import { SocketContext } from "../contexts/socketProvider";
+import React, { useState, useEffect, useContext } from 'react'
+import { SocketContext } from '../contexts/socketProvider'
 import logo from '../logo.svg'
 
 // import { socket } from "../sockets";
@@ -8,61 +8,61 @@ import '../style/App.css'
 const SOCKET_EVENT_MAP = {
   addUser: 'add user',
   newMessage: 'new message',
-  userJoined: 'user joined'
+  userJoined: 'user joined',
 }
 
-const IoTest = (props) => {
+const IoTest = props => {
   const { socket, messageHistory, setMessageHistory } = useContext(SocketContext)
-  const [userName, setUserName] = useState('');
-  const [inputText, setInputText] = useState('');
+  const [userName, setUserName] = useState('')
+  const [inputText, setInputText] = useState('')
 
-  socket.on(SOCKET_EVENT_MAP.newMessage, ({userName, message}) => {
-    setMessageHistory([...messageHistory,...[{userName, message}]])
+  socket.on(SOCKET_EVENT_MAP.newMessage, ({ userName, message }) => {
+    setMessageHistory([...messageHistory, ...[{ userName, message }]])
   })
 
-  socket.on(SOCKET_EVENT_MAP.userJoined, (data) => {
-    console.log(data);
-    const {userName, userCounter} = data
-    console.log({name: `${userName} joined`, message: `There are total ${userCounter} user now !~!`});
+  socket.on(SOCKET_EVENT_MAP.userJoined, data => {
+    console.log(data)
+    const { userName, userCounter } = data
+    console.log({ name: `${userName} joined`, message: `There are total ${userCounter} user now !~!` })
     setMessageHistory([
       ...messageHistory,
-      {userName: `${userName} joined`, message: `There are ${userCounter} user now`}
+      { userName: `${userName} joined`, message: `There are ${userCounter} user now` },
     ])
   })
-  
-  const handleSend = e =>{
-    const msg = { userName, message: inputText}
-    setMessageHistory([...messageHistory,...[msg]])
-    socket.emit(SOCKET_EVENT_MAP.newMessage, msg);
+
+  const handleSend = e => {
+    const msg = { userName, message: inputText }
+    setMessageHistory([...messageHistory, ...[msg]])
+    socket.emit(SOCKET_EVENT_MAP.newMessage, msg)
     setInputText('')
   }
 
   const handleInputName = e => {
     setInputText(e.target.value)
-    e.preventDefault();
+    e.preventDefault()
   }
 
   const handleEnterPress = (e, event) => {
-    if(!inputText) return
-    if(e.nativeEvent.keyCode === 13) {
+    if (!inputText) return
+    if (e.nativeEvent.keyCode === 13) {
       try {
         switch (event) {
           case SOCKET_EVENT_MAP.addUser:
             setUserName(inputText)
             socket.emit(SOCKET_EVENT_MAP.addUser, inputText)
             setInputText('')
-            break;
+            break
           case SOCKET_EVENT_MAP.newMessage:
-            const msg = { userName, message: inputText}
-            setMessageHistory([...messageHistory,...[msg]])
+            const msg = { userName, message: inputText }
+            setMessageHistory([...messageHistory, ...[msg]])
             socket.emit(SOCKET_EVENT_MAP.newMessage, msg)
             break
           default:
-            break;
+            break
         }
       } catch (err) {
-        console.log(err);
-      } finally{
+        console.log(err)
+      } finally {
         setInputText('')
       }
     }
@@ -72,41 +72,38 @@ const IoTest = (props) => {
     <div className="App">
       {userName ? (
         // <div  style="border-width:3px;border-style:dashed;border-color:#FFAC55;padding:5px;">
-        <div >
+        <div>
           <ul>
             {messageHistory.map(record => (
-              <li style={{borderWidth: '1px',borderStyle: 'dashed', borderColor: '#FFAC55', padding: '2px'}}>
+              <li style={{ borderWidth: '1px', borderStyle: 'dashed', borderColor: '#FFAC55', padding: '2px' }}>
                 {`${record.userName}: ${record.message}`}
               </li>
             ))}
           </ul>
           <div>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={inputText}
               placeholder="Type something here"
               onChange={e => setInputText(e.target.value)}
               onKeyPress={e => handleEnterPress(e, SOCKET_EVENT_MAP.newMessage)}
             />
-            <button 
-              disabled={(inputText.length > 0) ? false : true}
-              onClick={e => handleSend(e)}
-            >
-                Send
+            <button disabled={!(inputText.length > 0)} onClick={e => handleSend(e)}>
+              Send
             </button>
           </div>
         </div>
       ) : (
-        <div style={{margin: "50px 50px",padding: "32px"}}>
-          <h2 style={{textAlign: "center"}}>Welcome Here!</h2>
+        <div style={{ margin: '50px 50px', padding: '32px' }}>
+          <h2 style={{ textAlign: 'center' }}>Welcome Here!</h2>
           <input
             length="50"
             size="25"
-            placeholder={"please input your name"}
-            type={"text"}
+            placeholder={'please input your name'}
+            type={'text'}
             value={inputText}
-            onChange ={e => handleInputName(e)}
-            onKeyPress ={e => handleEnterPress(e, SOCKET_EVENT_MAP.addUser)}
+            onChange={e => handleInputName(e)}
+            onKeyPress={e => handleEnterPress(e, SOCKET_EVENT_MAP.addUser)}
           />
         </div>
       )}

@@ -1,20 +1,21 @@
 import '../style/chatRoom.css'
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react'
 
-
-import InboxPeople from "../components/inbox-people/inbox-people";
+import InboxPeople from '../components/inbox-people/inbox-people'
 
 const ChatRoom = props => {
   return (
     <div className="container">
-    <h3 className=" text-center">Messaging</h3>
-    <div className="messaging"></div>
+      <h3 className=" text-center">Messaging</h3>
+      <div className="messaging"></div>
       <div className="inbox_msg">
         <InboxPeople />
         <div className="mesgs">
           <div className="msg_history">
             <div className="incoming_msg">
-              <div className="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
+              <div className="incoming_msg_img">
+                {' '}
+                <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
               </div>
               <div className="received_msg">
                 <div className="received_withd_msg">
@@ -30,7 +31,9 @@ const ChatRoom = props => {
               </div>
             </div>
             <div className="incoming_msg">
-              <div className="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
+              <div className="incoming_msg_img">
+                {' '}
+                <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
               </div>
               <div className="received_msg">
                 <div className="received_withd_msg">
@@ -46,7 +49,9 @@ const ChatRoom = props => {
               </div>
             </div>
             <div className="incoming_msg">
-              <div className="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
+              <div className="incoming_msg_img">
+                {' '}
+                <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
               </div>
               <div className="received_msg">
                 <div className="received_withd_msg">
@@ -59,12 +64,13 @@ const ChatRoom = props => {
           <div className="type_msg">
             <div className="input_msg_write">
               <input type="text" className="write_msg" placeholder="Type a message" />
-              <button className="msg_send_btn" type="button"><i className="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+              <button className="msg_send_btn" type="button">
+                <i className="fa fa-paper-plane-o" aria-hidden="true"></i>
+              </button>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   )
 }
