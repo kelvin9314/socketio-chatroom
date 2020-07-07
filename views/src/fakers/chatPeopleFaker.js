@@ -4,6 +4,6 @@ export const chatPeopleGenFN = obj => {
     name: 'kelvin',
     lastSent: '11:20',
     lastContent: 'this is testing',
-    ... obj
+    ...obj,
   }
 }
