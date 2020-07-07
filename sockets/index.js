@@ -9,7 +9,6 @@ let userCounter = 0;
 module.exports = (io) => {
   io.on("connection", (socket) => {
     let isUserAdded = false;
-
     socket.broadcast.emit("hi");
     console.log("New client connected");
     socket.on("add user", (userName) => {

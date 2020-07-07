@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { SocketContext } from '../contexts/socketProvider'
-import logo from '../logo.svg'
 
-// import { socket } from "../sockets";
 import '../style/App.css'
 
 const SOCKET_EVENT_MAP = {
@@ -11,21 +9,26 @@ const SOCKET_EVENT_MAP = {
   userJoined: 'user joined',
 }
 
+
 const IoTest = props => {
   const { socket, messageHistory, updateMessageHistory } = useContext(SocketContext)
   const [userName, setUserName] = useState('')
   const [inputText, setInputText] = useState('')
 
-  socket.on(SOCKET_EVENT_MAP.newMessage, ({ userName, message }) => {
-    updateMessageHistory({ userName, message })
-  })
-
-  socket.on(SOCKET_EVENT_MAP.userJoined, data => {
-    // console.log(data)
-    const { userName, userCounter } = data
-    // console.log({ name: `${userName} joined`, message: `There are total ${userCounter} user now !~!` })
-    updateMessageHistory({ userName: `${userName} joined`, message: `There are ${userCounter} user now` })
-  })
+  useEffect(() => {
+    if(socket){
+      socket.on(SOCKET_EVENT_MAP.newMessage, ({userName, message}) => {
+        console.log(userName)
+        console.log(message)
+        updateMessageHistory({ userName, message })
+      })
+    
+      socket.on(SOCKET_EVENT_MAP.userJoined, data => {
+        const { userName, userCounter } = data
+        updateMessageHistory({ userName: `${userName} joined`, message: `There are ${userCounter} user now` })
+      })
+    }
+  }, [socket])
 
   const handleSend = e => {
     const msg = { userName, message: inputText }
