@@ -12,27 +12,24 @@ const SOCKET_EVENT_MAP = {
 }
 
 const IoTest = props => {
-  const { socket, messageHistory, setMessageHistory } = useContext(SocketContext)
+  const { socket, messageHistory, updateMessageHistory } = useContext(SocketContext)
   const [userName, setUserName] = useState('')
   const [inputText, setInputText] = useState('')
 
   socket.on(SOCKET_EVENT_MAP.newMessage, ({ userName, message }) => {
-    setMessageHistory([...messageHistory, ...[{ userName, message }]])
+    updateMessageHistory({ userName, message })
   })
 
   socket.on(SOCKET_EVENT_MAP.userJoined, data => {
-    console.log(data)
+    // console.log(data)
     const { userName, userCounter } = data
-    console.log({ name: `${userName} joined`, message: `There are total ${userCounter} user now !~!` })
-    setMessageHistory([
-      ...messageHistory,
-      { userName: `${userName} joined`, message: `There are ${userCounter} user now` },
-    ])
+    // console.log({ name: `${userName} joined`, message: `There are total ${userCounter} user now !~!` })
+    updateMessageHistory({ userName: `${userName} joined`, message: `There are ${userCounter} user now` })
   })
 
   const handleSend = e => {
     const msg = { userName, message: inputText }
-    setMessageHistory([...messageHistory, ...[msg]])
+    updateMessageHistory(msg)
     socket.emit(SOCKET_EVENT_MAP.newMessage, msg)
     setInputText('')
   }
@@ -54,7 +51,7 @@ const IoTest = props => {
             break
           case SOCKET_EVENT_MAP.newMessage:
             const msg = { userName, message: inputText }
-            setMessageHistory([...messageHistory, ...[msg]])
+            updateMessageHistory(msg)
             socket.emit(SOCKET_EVENT_MAP.newMessage, msg)
             break
           default:
@@ -75,7 +72,10 @@ const IoTest = props => {
         <div>
           <ul>
             {messageHistory.map(record => (
-              <li style={{ borderWidth: '1px', borderStyle: 'dashed', borderColor: '#FFAC55', padding: '2px' }}>
+              <li
+                key={record.dateTime}
+                style={{ borderWidth: '1px', borderStyle: 'dashed', borderColor: '#FFAC55', padding: '2px' }}
+              >
                 {`${record.userName}: ${record.message}`}
               </li>
             ))}
