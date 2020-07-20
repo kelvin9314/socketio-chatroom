@@ -104,7 +104,7 @@ img {
 
 .incoming_msg_img {
   display: inline-block;
-  width: 6%;
+  width: 4%;
 }
 .received_msg {
   display: inline-block;
@@ -133,7 +133,7 @@ img {
 .mesgs {
   float: left;
   padding: 30px 15px 0 25px;
-  width: 60%;
+  width: 100%;
 }
 
 .sent_msg p {
@@ -185,4 +185,10 @@ img {
 .msg_history {
   height: 516px;
   overflow-y: auto;
+}
+
+.received_personal_name {
+  color: steelblue;
+  font-size: large;
+  font-weight: bold;
 }

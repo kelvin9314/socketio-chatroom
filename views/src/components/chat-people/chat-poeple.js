@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import '../../style/chatRoom.css'
+import '../../style/temp.css'
 
 // maybe change to use useMemo, equal to React.pureComponetns
 const ChatPeople = ({ data, isActive }) => {
@@ -10,8 +10,7 @@ const ChatPeople = ({ data, isActive }) => {
     <div className={`chat_list ${isActive ? 'active_chat' : ''}`}>
       <div className="chat_people">
         <div className="chat_img">
-          {' '}
-          <img src={iconImg} alt="sunil" />{' '}
+          <img src={iconImg} alt="sunil" />
         </div>
         <div className="chat_ib">
           <h5>

@@ -9,7 +9,6 @@ let userCounter = 0;
 module.exports = (io) => {
   io.on("connection", (socket) => {
     let isUserAdded = false;
-
     socket.broadcast.emit("hi");
     console.log("New client connected");
     socket.on("add user", (userName) => {
@@ -19,19 +18,15 @@ module.exports = (io) => {
       userCounter += 1;
       console.log(userName);
 
-      socket.broadcast.emit("user joined", {
-        userName: userName,
-        userCounter,
-      });
+      // socket.broadcast.emit("user joined", {
+      //   userName: userName,
+      //   userCounter,
+      // });
     });
 
     socket.on("new message", (data) => {
-      const { userName, message } = data;
-      console.log(userName, message);
-      socket.broadcast.emit("new message", {
-        userName,
-        message,
-      });
+      console.log(data);
+      io.sockets.emit("new message", data);
     });
 
     socket.on("disconnect", () => {
