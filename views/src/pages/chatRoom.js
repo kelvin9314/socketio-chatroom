@@ -1,76 +1,142 @@
-import '../style/chatRoom.css'
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
+import { SocketContext } from '../contexts/socketProvider'
+import md5 from 'md5'
 
-import InboxPeople from '../components/inbox-people/inbox-people'
+import '../style/temp.css'
 
-const ChatRoom = props => {
+import IncomingMsg from '../components/incoming-msg/IncomingMsg'
+import OutgoingMsg from '../components/outgoing-msg/OutgoingMsg'
+
+const SOCKET_EVENT_MAP = {
+  addUser: 'add user',
+  newMessage: 'new message',
+  userJoined: 'user joined',
+}
+
+const ChatRoom = () => {
+  const { socket, messageHistory, updateMessageHistory } = useContext(SocketContext)
+  const [userName, setUserName] = useState('')
+  const [inputText, setInputText] = useState('')
+
+  useEffect(() => {
+    if (socket) {
+      socket.on(SOCKET_EVENT_MAP.newMessage, data => {
+        updateMessageHistory(data)
+      })
+
+      // socket.on(SOCKET_EVENT_MAP.userJoined, data => {
+      //   const { userName, userCounter } = data
+      //   updateMessageHistory({ userName: `${userName} joined`, message: `There are ${userCounter} user now` })
+      // })
+    }
+
+    return () => {
+      localStorage.removeItem('userHash')
+    }
+  }, [socket])
+
+  const handleInputName = e => {
+    setInputText(e.target.value)
+    e.preventDefault()
+  }
+
+  const handleSend = () => {
+    if (!inputText) {
+      console.log('empty string ')
+      return
+    }
+
+    const msg = {
+      userName,
+      hash: localStorage.userHash,
+      message: inputText,
+      dateTime: new Date().toISOString(),
+    }
+    socket.emit(SOCKET_EVENT_MAP.newMessage, msg)
+    setInputText('')
+  }
+
+  useEffect(() => {
+    console.log(messageHistory)
+  }, [messageHistory])
+
+  const handleEnterPress = (e, event) => {
+    if (!inputText) return
+    if (e.nativeEvent.keyCode === 13) {
+      try {
+        switch (event) {
+          case SOCKET_EVENT_MAP.addUser:
+            setUserName(inputText)
+            localStorage.setItem('name', inputText)
+            const hashValue = md5(`${inputText}${new Date().toISOString()}`)
+            localStorage.setItem('userHash', hashValue)
+            socket.emit(SOCKET_EVENT_MAP.addUser, inputText)
+            break
+          case SOCKET_EVENT_MAP.newMessage:
+            const msg = {
+              userName,
+              hash: localStorage.userHash,
+              message: inputText,
+              dateTime: new Date().toISOString(),
+            }
+            socket.emit(SOCKET_EVENT_MAP.newMessage, msg)
+            break
+          default:
+            break
+        }
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setInputText('')
+      }
+    }
+  }
+
   return (
-    <div className="container">
-      <h3 className=" text-center">Messaging</h3>
-      <div className="messaging"></div>
-      <div className="inbox_msg">
-        <InboxPeople />
-        <div className="mesgs">
-          <div className="msg_history">
-            <div className="incoming_msg">
-              <div className="incoming_msg_img">
-                {' '}
-                <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
-              </div>
-              <div className="received_msg">
-                <div className="received_withd_msg">
-                  <p>Test 123</p>
-                  <span className="time_date"> 11:01 AM | Mar 9</span>
-                </div>
-              </div>
+    <div>
+      {userName ? (
+        <div className="container">
+          <h3 className=" text-center">Messaging</h3>
+          <div className="messaging"></div>
+          <div className="mesgs">
+            <div className="msg_history">
+              {messageHistory.map(record =>
+                record.hash !== localStorage.userHash ? <IncomingMsg {...record} /> : <OutgoingMsg {...record} />
+              )}
             </div>
-            <div className="outgoing_msg">
-              <div className="sent_msg">
-                <p>I have a dream</p>
-                <span className="time_date"> 11:01 AM | June 9</span>
+            <div className="type_msg">
+              <div className="input_msg_write">
+                {/* <form onSubmit={handleSend}> */}
+                <input
+                  type="text"
+                  className="write_msg"
+                  placeholder="Type a message"
+                  value={inputText}
+                  onChange={e => setInputText(e.target.value)}
+                  onKeyPress={e => handleEnterPress(e, SOCKET_EVENT_MAP.newMessage)}
+                />
+                <button className="msg_send_btn" onClick={() => handleSend()}>
+                  <i className="fa fa-paper-plane-o" aria-hidden="true"></i>
+                </button>
+                {/* </form> */}
               </div>
-            </div>
-            <div className="incoming_msg">
-              <div className="incoming_msg_img">
-                {' '}
-                <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
-              </div>
-              <div className="received_msg">
-                <div className="received_withd_msg">
-                  <p>Test, which is a new approach to have</p>
-                  <span className="time_date"> 11:01 AM | Yesterday</span>
-                </div>
-              </div>
-            </div>
-            <div className="outgoing_msg">
-              <div className="sent_msg">
-                <p>People shouldn't be afraid of their government. Governments should be afraid of their people.</p>
-                <span className="time_date"> 11:01 AM | Today</span>
-              </div>
-            </div>
-            <div className="incoming_msg">
-              <div className="incoming_msg_img">
-                {' '}
-                <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
-              </div>
-              <div className="received_msg">
-                <div className="received_withd_msg">
-                  <p>Test</p>
-                  <span className="time_date"> 11:01 AM | Today</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="type_msg">
-            <div className="input_msg_write">
-              <input type="text" className="write_msg" placeholder="Type a message" />
-              <button className="msg_send_btn" type="button">
-                <i className="fa fa-paper-plane-o" aria-hidden="true"></i>
-              </button>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="App" style={{ margin: '50px 50px', padding: '32px' }}>
+          <h2 style={{ textAlign: 'center' }}>Welcome Here!</h2>
+          <input
+            length="50"
+            size="25"
+            placeholder="please input your name"
+            type="text"
+            value={inputText}
+            onChange={e => handleInputName(e)}
+            onKeyPress={e => handleEnterPress(e, SOCKET_EVENT_MAP.addUser)}
+          />
+        </div>
+      )}
     </div>
   )
 }

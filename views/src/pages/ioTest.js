@@ -9,20 +9,19 @@ const SOCKET_EVENT_MAP = {
   userJoined: 'user joined',
 }
 
-
 const IoTest = props => {
   const { socket, messageHistory, updateMessageHistory } = useContext(SocketContext)
   const [userName, setUserName] = useState('')
   const [inputText, setInputText] = useState('')
 
   useEffect(() => {
-    if(socket){
-      socket.on(SOCKET_EVENT_MAP.newMessage, ({userName, message}) => {
+    if (socket) {
+      socket.on(SOCKET_EVENT_MAP.newMessage, ({ userName, message }) => {
         console.log(userName)
         console.log(message)
         updateMessageHistory({ userName, message })
       })
-    
+
       socket.on(SOCKET_EVENT_MAP.userJoined, data => {
         const { userName, userCounter } = data
         updateMessageHistory({ userName: `${userName} joined`, message: `There are ${userCounter} user now` })
@@ -102,8 +101,8 @@ const IoTest = props => {
           <input
             length="50"
             size="25"
-            placeholder={'please input your name'}
-            type={'text'}
+            placeholder="please input your name"
+            type="text"
             value={inputText}
             onChange={e => handleInputName(e)}
             onKeyPress={e => handleEnterPress(e, SOCKET_EVENT_MAP.addUser)}
