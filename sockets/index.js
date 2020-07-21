@@ -23,7 +23,6 @@ module.exports = (io) => {
       //   userCounter,
       // });
     });
-
     socket.on("new message", (data) => {
       console.log(data);
       io.sockets.emit("new message", data);

@@ -15,11 +15,11 @@ const SocketProvider = props => {
 
   const updateMessageHistory = data => {
     console.log(data)
-
-    const bbb = [...messageHistory, data]
-    console.log(bbb)
-
-    setMessageHistory(bbb)
+    // Way one
+    messageHistory.push(data)
+    setMessageHistory([...messageHistory])
+    // Way two
+    // setMessageHistory((prevState) => [...prevState, data])
   }
 
   return (

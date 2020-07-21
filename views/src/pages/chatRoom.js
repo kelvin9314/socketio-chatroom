@@ -17,6 +17,8 @@ const ChatRoom = () => {
   const { socket, messageHistory, updateMessageHistory } = useContext(SocketContext)
   const [userName, setUserName] = useState('')
   const [inputText, setInputText] = useState('')
+  const formRef = React.createRef(null)
+  const msgHistoryRef = React.createRef(null)
 
   useEffect(() => {
     if (socket) {
@@ -40,25 +42,33 @@ const ChatRoom = () => {
     e.preventDefault()
   }
 
-  const handleSend = () => {
-    if (!inputText) {
+  const handleSend = (e) => {
+    e.preventDefault()
+
+    const text = formRef.current.inputText.value
+    if (!text) {
       console.log('empty string ')
       return
     }
 
     const msg = {
       userName,
+      msgType: '', 
       hash: localStorage.userHash,
-      message: inputText,
+      message: text,
       dateTime: new Date().toISOString(),
     }
     socket.emit(SOCKET_EVENT_MAP.newMessage, msg)
-    setInputText('')
+    formRef.current.inputText.value = ''
   }
 
   useEffect(() => {
     console.log(messageHistory)
+    if(userName && msgHistoryRef){
+      msgHistoryRef.current.scrollTop = msgHistoryRef.current.scrollHeight
+    }
   }, [messageHistory])
+  
 
   const handleEnterPress = (e, event) => {
     if (!inputText) return
@@ -99,26 +109,31 @@ const ChatRoom = () => {
           <h3 className=" text-center">Messaging</h3>
           <div className="messaging"></div>
           <div className="mesgs">
-            <div className="msg_history">
+            <div className="msg_history" ref={msgHistoryRef}>
               {messageHistory.map(record =>
                 record.hash !== localStorage.userHash ? <IncomingMsg {...record} /> : <OutgoingMsg {...record} />
               )}
+              
             </div>
             <div className="type_msg">
               <div className="input_msg_write">
-                {/* <form onSubmit={handleSend}> */}
+                <form onSubmit={handleSend} ref={formRef}>
                 <input
                   type="text"
+                  name="inputText"
                   className="write_msg"
                   placeholder="Type a message"
-                  value={inputText}
-                  onChange={e => setInputText(e.target.value)}
-                  onKeyPress={e => handleEnterPress(e, SOCKET_EVENT_MAP.newMessage)}
+                  // value={inputText}
+                  // onChange={e => setInputText(e.target.value)}
+                  // onKeyPress={e => handleEnterPress(e, SOCKET_EVENT_MAP.newMessage)}
                 />
-                <button className="msg_send_btn" onClick={() => handleSend()}>
+                <button 
+                  className="msg_send_btn" 
+                  // onClick={() => handleSend()}
+                  >
                   <i className="fa fa-paper-plane-o" aria-hidden="true"></i>
                 </button>
-                {/* </form> */}
+                </form>
               </div>
             </div>
           </div>
