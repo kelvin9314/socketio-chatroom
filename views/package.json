@@ -7,7 +7,7 @@
     "@testing-library/react": "^10.4.4",
     "@testing-library/user-event": "^12.0.11",
     "acorn": "^7.1.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bootstrap": "^4.4.1",
     "dotenv": "^8.2.0",
     "font-awesome": "^4.7.0",
